@@ -2,16 +2,19 @@
 using namespace std;
 
 int main() {
-    int a= 5;
+    int a = 5;
     int b = 6;
     int c = 7;
 
-    b=a;
-    c=b;
-    a=c;
+    int temp1= a;
+    int temp2 = b;
 
-    cout << a <<endl;
-    cout << b <<endl;
-    cout << c <<endl;
+    a = c;
+    b = temp1;
+    c = temp2;
+
+    cout << a << endl;
+    cout << b << endl;
+    cout << c << endl;
     return 0;
 }
