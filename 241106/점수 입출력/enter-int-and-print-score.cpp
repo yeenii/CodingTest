@@ -3,7 +3,7 @@ using namespace std;
 
 int main() {
     int a;
-    cin >> a >> endl;
+    cin >> a;
 
     if(a>=1 && a<=1000)
     {
