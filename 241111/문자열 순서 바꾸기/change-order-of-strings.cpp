@@ -8,6 +8,6 @@ int main() {
     cin >> s;
     cin >> t;
 
-    cout << s << endl << t;
+    cout << t << endl << s;
     return 0;
 }
