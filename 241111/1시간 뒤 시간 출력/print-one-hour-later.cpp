@@ -7,6 +7,6 @@ int main() {
 
     cin >> a >> c >> b;
 
-    cout << a << c << b;
+    cout << a+1 << c << b;
     return 0;
 }
