@@ -16,7 +16,7 @@ int main() {
 
     if (b >= 25)
     {
-        cout << "obesity" << endl;
+        cout << "Obesity" << endl;
     }
 
     return 0;
