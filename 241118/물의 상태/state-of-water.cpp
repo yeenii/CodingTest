@@ -6,18 +6,18 @@ int main() {
 
     cin >> n;
 
-    if(n<0)
+    if (n < 0)
     {
-        cout << "ice" <<endl;
+        cout << "ice" << endl;
     }
-    else if(n>=100)
+    else if (n >= 100)
     {
-        cout << "vapor" <<endl;
+        cout << "vapor" << endl;
     }
     else
     {
-        cout << "water" <<endl;
+        cout << "water" << endl;
     }
-    
+
     return 0;
 }
