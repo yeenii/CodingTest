@@ -8,22 +8,29 @@ int main() {
 
     cin >> n >> m;
 
-    if (m > n)
+    if (n > m)
     {
-        result = m % n;
+        while (m != 0)
+        {
+            result= n % m;
+            n = m;
+            m = result;
 
-        if (n == 1)
-            result = 1;
+        }
+        cout << n;
     }
     else
     {
-        result = n % m;
-
-        if (m == 1)
-            result = 1;
+        while (n != 0)
+        {
+            result = m % n;
+            m = n;
+            n = result;
+            
+        }
+        cout << m;
     }
-
-    cout << result << endl;
+    
     
     return 0;
 }
