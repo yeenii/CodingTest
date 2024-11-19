@@ -2,12 +2,9 @@
 #include<string>
 using namespace std;
 
-int main() {
-    int a, b;
-    int sum = 0;
-
-
-    cin >> a >> b;
+int returnVal(int a, int b)
+{
+    int sum=0;
 
     for (int i = a; i <= b; i++)
     {
@@ -17,13 +14,26 @@ int main() {
         {
             int num = digit_str - '0';
 
-            if (num == 3 || num == 6 || num == 9 || num%3==0)
+            if ((num == 3 || num == 6 || num == 9) || num % 3 == 0)
             {
-               sum += 1;
+                sum += 1;
             }
 
         }
     }
+
+    return sum;
+}
+
+int main() {
+    int a, b;
+
+
+    cin >> a >> b;
+
+
+    int sum =returnVal(a, b);
+
 
     cout << sum << endl;
 
