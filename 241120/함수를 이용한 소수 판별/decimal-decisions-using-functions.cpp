@@ -28,7 +28,6 @@ int IsPrime(int a, int b)
         if (isPrime(i))
         {
             result += i; //소수 값만 더하기
-            cout << i << endl;
         }
         
 
