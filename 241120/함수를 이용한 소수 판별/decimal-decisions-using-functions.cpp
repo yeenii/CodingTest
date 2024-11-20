@@ -42,7 +42,7 @@ int main() {
 
     int isPrime = IsPrime(a, b);
 
-    cout << "소수값: " << isPrime << endl;
+    cout << isPrime << endl;
 
     return 0;
 }
