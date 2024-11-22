@@ -6,7 +6,7 @@ int main() {
 
     cin >> a >> b;
 
-    int result = pow(3,4);
+    int result = pow(a,b);
 
     cout << result <<endl;
     return 0;
