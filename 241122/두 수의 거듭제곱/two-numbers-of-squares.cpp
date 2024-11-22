@@ -1,13 +1,14 @@
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 int main() {
-    int a,b;
+    int a, b;
 
     cin >> a >> b;
 
-    int result = pow(a,b);
+    int result = pow(a, b);
 
-    cout << result <<endl;
+    cout << result << endl;
     return 0;
 }
