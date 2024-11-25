@@ -2,31 +2,31 @@
 using namespace std;
 
 int main() {
-    
+
     int a, b;
     char c;
 
     cin >> a >> c >> b;
 
-    if(c=='+')
+    if (c == '+')
     {
-        cout << a << "+" << b << "=" <<a+b << endl;
+        cout << a << " + " << b << " = " << a + b << endl;
     }
-    else if(c=='-')
+    else if (c == '-')
     {
-        cout << a << "-" << b << "=" <<a-b << endl;
+        cout << a << " - " << b << " = " << a - b << endl;
     }
-    else if(c=='/')
+    else if (c == '/')
     {
-        cout << a << "/" << b << "=" <<a/b << endl;
+        cout << a << " / " << b << " = " << a / b << endl;
     }
-    else if(c=='*')
+    else if (c == '*')
     {
-        cout << a << "*" << b << "=" <<a*b << endl;
+        cout << a << " * " << b << " = " << a * b << endl;
     }
     else
     {
-        cout << False <<endl;
+        cout << "False" << endl;
     }
 
     return 0;
