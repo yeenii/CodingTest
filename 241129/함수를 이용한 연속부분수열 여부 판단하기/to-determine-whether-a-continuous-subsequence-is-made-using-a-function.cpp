@@ -22,7 +22,7 @@ bool IsSame(int i, int n2)
 bool IsSubsequence(int n1, int n2)
 {   
     //n2에 +1만큼 돌음
-    for (int i = 0; i <= n1 - n2; i++)
+    for (int i = 0; i < n1 - n2; i++)
     {
         if (IsSame(i, n2))
             return true;
