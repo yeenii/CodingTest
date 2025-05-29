@@ -150,18 +150,16 @@ void lunchTime()
 
             //**5. 대표 리스트 저장 : 기본 음식 개수 , 신앙심, 좌표 - 기본 음식이 가장 작은 순에서 신앙심이 큰 대표 순으로 정렬됨 
             leadersList.push_back({{basicFoodCount, -faithArray[leaderRow][leaderCol]}, {leaderRow,leaderCol}});
-
+            
+            
         }            
+
         
     }
     sort(leadersList.begin(), leadersList.end()); //대표 리스트 정렬 
 
     
-    cout << leadersList[0].first.second<<endl;
-    cout << leadersList[0].first.second<<endl;
-    cout << leadersList[0].first.second<<endl;
-    cout << leadersList[0].first.second<<endl;
-    cout << leadersList[0].first.second<<endl;
+    //cout << leadersList[0].first.second<<endl;
 
     //cout << "---faithArray--" <<endl;
     //for(int row=0; row<foodGrid; row++)
@@ -281,18 +279,28 @@ void dinnerTime()
 
         }
 
+        //cout << "----faithArray----" <<endl;
+        //for(int i=0; i<foodGrid; i++)
+        //{
+            //for(int j=0; j<foodGrid; j++)
+            //{
+                //cout << faithArray[i][j] << " ";
+            //}
+            //cout <<endl;
+        //}
+
 
     }
 
-    cout << "---faithArray 최종--" <<endl;
-    for(int i=0; i<foodGrid; i++)
-    {
-        for(int j=0; j<foodGrid; j++)
-        {
-            cout << faithArray[i][j] <<" ";
-        }
-        cout <<endl;
-    }
+    //cout << "---faithArray 최종--" <<endl;
+    //for(int i=0; i<foodGrid; i++)
+    //{
+        //for(int j=0; j<foodGrid; j++)
+        //{
+            //cout << faithArray[i][j] <<" ";
+        //}
+        //cout <<endl;
+    //}
 
 
 }
