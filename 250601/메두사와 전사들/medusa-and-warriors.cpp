@@ -169,6 +169,7 @@ int sightUp(int x, int y, bool isTest)
 
     }
 
+
     if(!isTest) //테스트가 아닌 적용하는 경우 (true: test, false: 적용)
     {
         for(int i=0; i<villageSize; i++)
@@ -272,6 +273,7 @@ int sightDown(int x, int y, bool isTest)
 
     }
 
+
     if(!isTest) //테스트가 아닌 적용하는 경우 (true: test, false: 적용)
     {
         for(int i=0; i<villageSize; i++)
@@ -298,7 +300,7 @@ int sightLeft(int x, int y, bool isTest)
     {
         for(int j=0; j< villageSize; j++)
         {
-            tempSight[j][i]=0;
+            tempSight[i][j]=0;
         }
     }
 
@@ -310,7 +312,7 @@ int sightLeft(int x, int y, bool isTest)
 
         for(int j=top; j<=bottom; j++)
         {
-            tempSight[i][j]=1; //시야 처리 
+            tempSight[j][i]=1; //시야 처리 
         }
 
     }
@@ -347,6 +349,7 @@ int sightLeft(int x, int y, bool isTest)
 
         }
 
+
         for(int j= x+1; j<=bottom; j++)
         {
             if(tempSight[j][i]==0 || warriorGrid[j][i]) //만약에, 한칸 아래 우측에 전사가 있으면 
@@ -362,14 +365,6 @@ int sightLeft(int x, int y, bool isTest)
 
     }
 
-    //for(int i=0; i<villageSize; i++)
-    //{
-        //for(int j=0; j<villageSize; j++)
-        //{
-            //cout << sightMap[i][j] << " ";
-        //}
-        //cout <<endl;
-    //}
 
     //3. 시야 내 전사 수 계산 
     for(int i=y-1; i>=0; i--) //그리드 내 아래 방향으로 
@@ -384,6 +379,8 @@ int sightLeft(int x, int y, bool isTest)
         }
 
     }
+
+    
 
      if(!isTest) //테스트가 아닌 적용하는 경우 (true: test, false: 적용)
     {
