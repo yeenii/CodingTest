@@ -78,7 +78,7 @@ int sightUp(int x, int y, bool isTest)
     int warriorsCount =0;
     int tempSight[N][N];
 
-    //sightMap 초기화
+    //tempSight 초기화
     for(int i=0; i<villageSize; i++)
     {
         for(int j=0; j< villageSize; j++)
@@ -379,7 +379,7 @@ int sightLeft(int x, int y, bool isTest)
 
         for(int j=top; j<=bottom; j++)
         {
-            if(sightMap[j][i]==1) //전사 뒤 셀 제거한 시야
+            if(tempSight[j][i]==1) //전사 뒤 셀 제거한 시야
                 warriorsCount += warriorGrid[j][i]; //시야 내에 있는 모든 전사 수를 더함 
         }
 
@@ -525,11 +525,11 @@ int chooseBestSight(int currentRow, int currentCol) //현재 row, 현재 col, �
 
     if(up==maxCount)
         return sightUp(currentRow, currentCol, false);
-    if(down==maxCount)
+    else if(down==maxCount)
         return sightDown(currentRow, currentCol, false);
-    if(left==maxCount)
+    else if(left==maxCount)
         return sightLeft(currentRow, currentCol, false);
-    if(right==maxCount)
+    else if(right==maxCount)
         return sightRight(currentRow, currentCol, false);
     
     
