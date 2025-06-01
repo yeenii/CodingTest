@@ -514,22 +514,36 @@ int chooseBestSight(int currentRow, int currentCol) //현재 row, 현재 col, �
         }
     }
 
+    int maxCount = -1;
+    int dir = -1;
+
+    int countSight[4];
+
     //전사 수가 많은 시야를 sightMap에 저장하기 위해 isTest 사용
     //isTest - true : 테스트용. 0으로 초기화 | false: 적용 
-    int up = sightUp(currentRow, currentCol, true); 
-    int down = sightDown(currentRow, currentCol, true);
-    int left = sightLeft(currentRow, currentCol, true);
-    int right= sightRight(currentRow, currentCol, true);
+    countSight[0] = sightUp(currentRow, currentCol, true); 
+    countSight[1] = sightDown(currentRow, currentCol, true);
+    countSight[2] = sightLeft(currentRow, currentCol, true);
+    countSight[3] = sightRight(currentRow, currentCol, true);
 
-    int maxCount = max({up, down, left, right});
+    //가장 많은 `돌이된 전사`를 가지고 있는 시야 방향을 구함 
+    for(int i=0; i<4; i++)
+    {
+        if(maxCount < countSight[i])
+        {
+            maxCount = countSight[i];
+            dir = i;
+        }
+    }
 
-    if(up==maxCount)
-        return sightUp(currentRow, currentCol, false);
-    else if(down==maxCount)
+    //**전사 수가 동일한 시야가 여러개일 경우, 상하좌우 우선순위로 해야하기 때문에 else if 써야 됨.
+    if(dir == 0)
+        return sightUp(currentRow, currentCol, false);      
+    else if(dir == 1)
         return sightDown(currentRow, currentCol, false);
-    else if(left==maxCount)
+    else if(dir ==2)
         return sightLeft(currentRow, currentCol, false);
-    else if(right==maxCount)
+    else if(dir == 3)
         return sightRight(currentRow, currentCol, false);
     
     
