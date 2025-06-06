@@ -33,8 +33,8 @@ int dcol[4] = {0, 0, -1, 1};
 struct RotationResult {
     int score; //유물가치
     int angle; //회전각도: 90, 180, 270 
-    int row; // 열 - 오름차순
     int col; //행 - 오름차순
+    int row; // 열 - 오름차순
     int index; //구간 0~9
 };
 
@@ -413,6 +413,7 @@ int turnGrid_270(int count, int centerRow, int centerCol,bool isApply)
         }
     }
 
+
     //tempGrid270[i][j]에 tempGrid의 값 저장 
     //만약에 270도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid270에 있는 값 리턴 | 아니라면, 넘기지 않음
     //temp270을 0으로 초기화
@@ -450,6 +451,9 @@ void fillZeroSpace()
 
     // (2) 정렬 : 열 번호 작은 순 - 행번호 작은 순
     sort(spaceZero.begin(), spaceZero.end()); 
+
+    if (pieceWall_que.size() < spaceZero.size()) 
+        return;
     
     // (3) 유적의 벽면에 써있는 숫자를 순서대로 채워넣음 
     for(int i=0; i<spaceZero.size(); i++)
@@ -462,6 +466,7 @@ void fillZeroSpace()
         pieceWall_que.pop();
 
     }
+
 }
 
 int main() {
@@ -495,8 +500,12 @@ int main() {
 
     int maxArtifact; //유물 가치의 총합
 
+
     for(int t=0; t<k; t++)//k번 턴
     {
+        //results 초기화
+        results.clear();
+
         maxArtifact =0; //초기화
 
         if(pieceWall_que.empty())
@@ -546,9 +555,7 @@ int main() {
                         {
                             //grid3x3[count][dr][dc] = historySpace[dr][dc]; //값
                             grid3x3[count].push_back({historySpace[dr][dc],{dr,dc}});
-                            //cout << grid3x3[count][dr][dc] <<" ";
                         }
-                        //cout <<endl;
                     }
                     count++;
                     //cout <<endl;
@@ -560,10 +567,6 @@ int main() {
         //(3) grid3x3을 90도, 180도, 270도 회전하고 
         //(4) 유물 가치 가장 큰 값 구하기 
         // isApply -> true : 유물 가치 가장 큰 값 리턴, false : 아님 
-
-        //results 초기화
-        results.clear();
-
         for(int i=0; i<9;i++) //9개의 3x3 그리드 구간 
         {
             //중앙 좌표 구하기 
@@ -583,6 +586,10 @@ int main() {
             results.push_back({artifact90, 90, centerCol, centerRow, i}); //90도 //점수는 내림차순
             results.push_back({artifact180,180, centerCol, centerRow, i}); //180도
             results.push_back({artifact270,270, centerCol, centerRow, i}); //270도
+            //cout << artifact90 << " " << centerRow << " " <<centerCol <<" " <<i <<endl;
+            //cout << artifact180 << " " << centerRow << " " <<centerCol <<" " <<i <<endl;
+            //cout << artifact270 << " " << centerRow << " " <<centerCol <<" " <<i <<endl;
+            //cout <<endl;
         }
 
         //우선 순위 별 정렬을 통해 유물 가치 가장 큰 회전 구함
@@ -596,7 +603,13 @@ int main() {
         //index는 정렬할 필요 없음
         }); 
 
+
         RotationResult best = results[0]; //가장 유물가치가 큰 값 
+
+        //cout << "score: "<<results[0].score <<endl;
+        //cout << "row: "<<results[0].row <<endl;
+        //cout << "col: "<<results[0].col <<endl;
+        //cout << "index: "<<results[0].index <<endl;
 
         //모든 유물 획득 과정에서 유물을 획득하지 못하였기 때문에 탐사 즉시 종료 
         if(best.score==0)
@@ -613,18 +626,19 @@ int main() {
         else
             turnGrid_270(best.index, best.row, best.col, true);
 
+
         //사라진 위치에 새로운 조각 생성 
         fillZeroSpace();
 
         //2. 유물 연쇄 획득 -  더이상 새로운 조각이 생성X & 조각이 3개 이상 연결되지 않을 때 까지 반복 
         //bfs로 인접한 조각들 연결해서 최대 유적 가치 구하고
         while(true)
-        {
-            int reScore = repeatGet(); //유물 가치 획득 개수 
+        { 
+            int reScore = repeatGet(); //유물 가치 획득 개수
 
             if(pieceWall_que.empty()|| reScore==0)
                 break;
-        
+
             fillZeroSpace(); //사라진 부분 채우기 
 
             maxArtifact+= reScore;
