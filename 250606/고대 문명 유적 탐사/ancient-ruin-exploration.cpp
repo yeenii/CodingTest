@@ -16,16 +16,6 @@ queue<int> pieceWall_que; //유적 벽면에 써있는 숫자 저장한 큐
 int centerPoint[5][5]; //3x3 격자 중심 좌표인 곳은 1로 설정 
 vector<pair<int, pair<int,int>>> grid3x3[9]; //3x3 격자 값 저장. {값, {row,col}}
 int tempGrid[5][5]; //회전한 배열 임시 저장
-
-vector<RotationResult> results; // 유물 가치 저장 
-vector<pair<int,int>> spaceZero; //0인 위치 저장 
-int maxArtifact; //유물 가치의 총합
-
-//BFS
-bool visited[5][5]; //방문 여부 
-int drow[4] = {-1, 1, 0, 0};
-int dcol[4] = {0, 0, -1, 1};
-
 /* 
     구조체 생성 -> 우선 순위 별 정렬 
     (1) 유물 가치 가장 큰 값 
@@ -40,6 +30,15 @@ struct RotationResult {
     int row; // 열 - 오름차순
     int index; //구간 0~9
 };
+
+vector<RotationResult> results; // 유물 가치 저장 
+vector<pair<int,int>> spaceZero; //0인 위치 저장 
+int maxArtifact; //유물 가치의 총합
+
+//BFS
+bool visited[5][5]; //방문 여부 
+int drow[4] = {-1, 1, 0, 0};
+int dcol[4] = {0, 0, -1, 1};
 
 
 vector<pair<int, int>> bfsConnectPiece( int val,int row, int col)
