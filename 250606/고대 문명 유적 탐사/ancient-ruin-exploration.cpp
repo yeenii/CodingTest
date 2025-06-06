@@ -2,7 +2,7 @@
 #include<vector>
 #include<queue>
 #include<algorithm>
-#include<tuple>
+
 using namespace std;
 
 const int K = 15; // 1 <= k <= 10
@@ -11,12 +11,15 @@ const int M = 330; // 10 <= M <= 300
 int k, m =0; //탐사 반복 횟수, 유물 조각 개수 
 int historySpace[5][5]; //유적지 정보 저장
 int pieceWall[M]; //m 개의 유물 조각 번호 
-int centerPoint[5][5]; //3x3 격자 중심 좌표인 곳은 1로 설정 
-//int grid3x3[9][5][5];
-vector<pair<int, pair<int,int>>> grid3x3[9]; //{값, {row,col}}
-
-int tempGrid[5][5]; //회전한 배열 임시 저장
 queue<int> pieceWall_que; //유적 벽면에 써있는 숫자 저장한 큐
+
+int centerPoint[5][5]; //3x3 격자 중심 좌표인 곳은 1로 설정 
+vector<pair<int, pair<int,int>>> grid3x3[9]; //3x3 격자 값 저장. {값, {row,col}}
+int tempGrid[5][5]; //회전한 배열 임시 저장
+
+vector<RotationResult> results; // 유물 가치 저장 
+vector<pair<int,int>> spaceZero; //0인 위치 저장 
+int maxArtifact; //유물 가치의 총합
 
 //BFS
 bool visited[5][5]; //방문 여부 
@@ -38,29 +41,28 @@ struct RotationResult {
     int index; //구간 0~9
 };
 
-vector<RotationResult> results; // 유물 가치 저장 
-vector<pair<int,int>> spaceZero; //0인 위치 저장 
 
 vector<pair<int, int>> bfsConnectPiece( int val,int row, int col)
 {
     queue<pair<int, int>> que;
     vector<pair<int, int>> group; //같은 조각이 인접해 있는 그룹 row, col 좌표 저장 
 
-    //cout << "val: "<< val << "row: "<<row << "col: "<<col <<endl;
-
+    //1. 큐에 푸시하며 방문 처리 
     que.push({row, col});
     visited[row][col]=true;
-    group.push_back({row, col});
+    group.push_back({row, col}); //그룹에 현재 조각 종류 저장
 
-    while(!que.empty())
+    while(!que.empty()) //큐가 비어있지 않다면
     {
+        //현재 row, col
         int currentRow = que.front().first;
         int currentCol = que.front().second;
 
-        que.pop();
+        que.pop(); //큐를 팝
 
         for(int i=0; i<4; i++)//상하좌우 
         {
+            //상하좌우 row, col
             int nextRow = currentRow + drow[i];
             int nextCol = currentCol + dcol[i];
 
@@ -72,23 +74,15 @@ vector<pair<int, int>> bfsConnectPiece( int val,int row, int col)
             if(visited[nextRow][nextCol])
                 continue;
             
-            if(tempGrid[nextRow][nextCol]==val)
+            if(tempGrid[nextRow][nextCol]==val) //조각 종류가 같은 경우
             {
                 group.push_back({nextRow,nextCol}); //인접한 같은 조각 종류 저장 
+                //큐에 푸시하면서 방문처리
                 que.push({nextRow,nextCol});
-                visited[nextRow][nextCol] = true; //큐에 푸시하면서 방문처리 
-            }
-
-            
-            
+                visited[nextRow][nextCol] = true;  
+            } 
         }
-
     }
-
-    //그룹 확인 
-    //for(int i=0; i<group.size(); i++)
-        //cout << "x: "<<group[i].first <<"y: " << group[i].second <<endl;
-    //cout <<endl;
 
     return group;
     
@@ -158,7 +152,6 @@ int repeatGet()
 //90도 회전 
 int turnGrid_90(int count, int centerRow, int centerCol, bool isApply) 
 {
-    //1. 3x3 회전
     //tempGrid를 historySpace로 초기화
     for(int i=0; i<5; i++)
     {
@@ -168,7 +161,7 @@ int turnGrid_90(int count, int centerRow, int centerCol, bool isApply)
         }
     }
 
-    //grid3x3을 90도 회전
+    //1. grid3x3을 90도 회전
     for(int i=0; i<9; i++)
     {
 
@@ -201,22 +194,23 @@ int turnGrid_90(int count, int centerRow, int centerCol, bool isApply)
         }
     }
 
-    //2. BFS로 인접한 것 다 구하기 
+    //2. BFS로 인접한 같은 조각 개수 구하기 
     for(int i=0; i<5; i++)
     {
         for(int j=0; j<5; j++)
         {
-            if (visited[i][j])
+            if (visited[i][j]) //방문 여부
                 continue;
 
-            //전체 셀 돌면서, 해당 셀과 같은 종류의 셀을 구하고, 그 셀 들이 3개 이상일 때 유물 가치 획득. 
-            result = bfsConnectPiece(tempGrid[i][j],i,j); //값, row, col 넘겨줌 
+            //(1)전체 셀 돌면서, 해당 셀과 같은 종류의 셀을 구하고, 그 셀 들이 3개 이상일 때 유물 가치 획득. 
+            result = bfsConnectPiece(tempGrid[i][j],i,j);
 
+            //(2)인접한 조각 3개 이상이면 저장 
             if(result.size() >=3)
             {
-                score+= result.size(); //인접한 조각 3개 이상이면 저장 
+                score+= result.size();
 
-                for(int d=0; d<result.size(); d++) //셀 제거 
+                for(int d=0; d<result.size(); d++) //(3) 0으로 제거 
                 {
                     int deleteRow = result[d].first;
                     int deleteCol = result[d].second;
@@ -229,9 +223,8 @@ int turnGrid_90(int count, int centerRow, int centerCol, bool isApply)
         }
     }
 
-    //tempGrid90[i][j]에 tempGrid의 값 저장 
-    //만약에 90도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid90에 있는 값 리턴 | 아니라면, 넘기지 않음
-    //temp90을 0으로 초기화
+    //3. 5x5 유적지에 tempGrid의 값 저장 
+    //만약에 90도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid90에 있는 값 리턴.
     if(isApply)
     {
         for(int i=0; i<5; i++)
@@ -258,7 +251,7 @@ int turnGrid_180(int count, int centerRow, int centerCol,bool isApply)
         }
     }
 
-    //grid3x3을 90도 회전
+    //1. grid3x3을 180도 회전
     for(int i=0; i<9; i++)
     {
 
@@ -292,7 +285,7 @@ int turnGrid_180(int count, int centerRow, int centerCol,bool isApply)
         }
     }
 
-    //2. BFS로 인접한 것 다 구하기 
+    //2. BFS로 인접한 같은 조각 개수 구하기 
     for(int i=0; i<5; i++)
     {
         for(int j=0; j<5; j++)
@@ -300,13 +293,15 @@ int turnGrid_180(int count, int centerRow, int centerCol,bool isApply)
             if (visited[i][j])
                 continue;
 
-            //전체 셀 돌면서, 해당 셀과 같은 종류의 셀을 구하고, 그 셀 들이 3개 이상일 때 유물 가치 획득. 
-            result = bfsConnectPiece(tempGrid[i][j],i,j); //값, row, col 넘겨줌 
+            //(1)
+            result = bfsConnectPiece(tempGrid[i][j],i,j);
 
+            //(2)
             if(result.size() >=3)
             {
                 score+= result.size(); //인접한 조각 3개 이상이면 저장 
 
+                //(3)
                 for(int d=0; d<result.size(); d++) //셀 제거 
                 {
                     int deleteRow = result[d].first;
@@ -320,9 +315,8 @@ int turnGrid_180(int count, int centerRow, int centerCol,bool isApply)
         }
     }
 
-    //tempGrid180[i][j]에 tempGrid의 값 저장 
-    //만약에 180도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid180에 있는 값 리턴 | 아니라면, 넘기지 않음
-    //temp180을 0으로 초기화
+    //3. 5x5 유적지에 tempGrid의 값 저장 
+    //만약에 180도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid180에 있는 값 리턴.
     if(isApply)
     {
         for(int i=0; i<5; i++)
@@ -341,9 +335,6 @@ int turnGrid_180(int count, int centerRow, int centerCol,bool isApply)
 int turnGrid_270(int count, int centerRow, int centerCol,bool isApply) 
 {
     //tempGrid를 historySpace로 초기화
-    //int tempGrid[5][5];
-    int temp3x3[3][3];
-
     for(int i=0; i<5; i++)
     {
         for(int j=0; j<5; j++)
@@ -352,7 +343,7 @@ int turnGrid_270(int count, int centerRow, int centerCol,bool isApply)
         }
     }
 
-    //grid3x3을 90도 회전
+    //1. grid3x3을 90도 회전
     for(int i=0; i<9; i++)
     {
 
@@ -366,10 +357,10 @@ int turnGrid_270(int count, int centerRow, int centerCol,bool isApply)
         int newRow = centerRow-c; 
         int newCol = centerCol+r;
 
-        if(newRow<0 || newRow>=5 || newCol <0 || newCol >=5) 
+        if(newRow<0 || newRow>=5 || newCol <0 || newCol >=5) //영역 넘어가면 건너뛰기
             continue;
 
-        tempGrid[newRow][newCol]= val; 
+        tempGrid[newRow][newCol]= val; //tempGrid에 회전한 후 결과 저장
 
     }
 
@@ -385,21 +376,23 @@ int turnGrid_270(int count, int centerRow, int centerCol,bool isApply)
         }
     }
 
-    //2. BFS로 인접한 것 다 구하기 
+    //2. BFS로 인접한 같은 조각 개수 구하기 
     for(int i=0; i<5; i++)
     {
         for(int j=0; j<5; j++)
         {
-            if (visited[i][j])
+            if (visited[i][j]) //방문 여부
                 continue;
 
-            //전체 셀 돌면서, 해당 셀과 같은 종류의 셀을 구하고, 그 셀 들이 3개 이상일 때 유물 가치 획득. 
-            result = bfsConnectPiece(tempGrid[i][j],i,j); //값, row, col 넘겨줌 
+            //(1)
+            result = bfsConnectPiece(tempGrid[i][j],i,j);
 
+            //(2)
             if(result.size() >=3)
             {
                 score+= result.size(); //인접한 조각 3개 이상이면 저장 
 
+                //(3)
                 for(int d=0; d<result.size(); d++) //셀 제거 
                 {
                     int deleteRow = result[d].first;
@@ -414,9 +407,8 @@ int turnGrid_270(int count, int centerRow, int centerCol,bool isApply)
     }
 
 
-    //tempGrid270[i][j]에 tempGrid의 값 저장 
-    //만약에 270도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid270에 있는 값 리턴 | 아니라면, 넘기지 않음
-    //temp270을 0으로 초기화
+    //3. 5x5유적지에 tempGrid의 값 저장 
+    //만약에 270도 회전이 가장 큰 유물 가치를 갖고 있다면, tempGrid270에 있는 값 리턴.
     if(isApply)
     {
         for(int i=0; i<5; i++)
@@ -468,44 +460,35 @@ void fillZeroSpace()
 
 int main() {
     
-    cin >> k >> m; //탐사 반복 횟수, 유물 조각 개수 
-    //cout << k <<" " << m <<endl;
+    cin >> k >> m; //탐사 반복 횟수, 유물 조각 개수 입력 
 
-    // 5x5 유적지 
+    // 5x5 유적지 입력 
     for(int i=0; i<5; i++)
     {
         for(int j=0; j<5; j++)
         {
             cin >> historySpace[i][j];
-            //cout << historySpace[i][j] <<" "; 
         }
-        //cout <<endl;
     }
     
     //유적의 벽면에 써있는 숫자 
     for(int i=0; i<m; i++)
     {
         cin >> pieceWall[i];
-        //cout <<pieceWall[i] << " ";
     }
-    //cout <<endl;
 
     for(int i=0; i<m; i++)
     {
         pieceWall_que.push(pieceWall[i]); //유적의 벽면에 써있는 숫자 입력받은 것을 que에 저장 
     }
 
-    int maxArtifact; //유물 가치의 총합
-
-
     for(int t=0; t<k; t++)//k번 턴
     {
-        //results 초기화
-        results.clear();
+        
+        results.clear(); //results 초기화
+        maxArtifact =0; //유물 가치 총합 초기화
 
-        maxArtifact =0; //초기화
-
-        if(pieceWall_que.empty())
+        if(pieceWall_que.empty()) //유적 벽면 숫자 없으면 종료 
             break;
 
         //grid3x3 초기화 
@@ -514,9 +497,8 @@ int main() {
             grid3x3[i].clear();
         }
 
-        //1. 탐사 진행 
-        // 가능한 3X3 격자 중심 좌표 선택 & 90, 180, 270도 회전
-        //(1) 3x3 격자 중심 좌표 구하기 
+        //1. 탐사 진행
+        //(1)3x3 격자 중심 좌표 구하기 
         for(int i=0; i<5; i++)
         {
             for(int j=0; j<5; j++)
@@ -533,7 +515,7 @@ int main() {
             }
         }
 
-        //(2) 중심 좌표 기준으로 3x3 그리드 구하고, 배열 저장 
+        //(2) 중심 좌표 기준으로 3x3 그리드 구하고, {값, {row, col}} 저장 
         int count=0;
         for(int i=0; i<5; i++)
         {
@@ -543,30 +525,24 @@ int main() {
                 {
                     int centerPointRow = i;
                     int centerPointCol = j;
-                    //cout << "i: " << i <<" j: " << j <<endl;
                 
                     for(int dr=centerPointRow-1; dr<=centerPointRow+1; dr++)
                     {
-                        //cout << "count: "<< count <<endl;
                         for(int dc = centerPointCol-1; dc<=centerPointCol+1; dc++)
                         {
-                            //grid3x3[count][dr][dc] = historySpace[dr][dc]; //값
                             grid3x3[count].push_back({historySpace[dr][dc],{dr,dc}});
                         }
                     }
                     count++;
-                    //cout <<endl;
                 }
             }
         }
 
 
-        //(3) grid3x3을 90도, 180도, 270도 회전하고 
-        //(4) 유물 가치 가장 큰 값 구하기 
-        // isApply -> true : 유물 가치 가장 큰 값 리턴, false : 아님 
+        //(3) grid3x3을 90도, 180도, 270도 회전
         for(int i=0; i<9;i++) //9개의 3x3 그리드 구간 
         {
-            //중앙 좌표 구하기 
+            //중심 좌표
             int centerRow = grid3x3[i][4].second.first;
             int centerCol = grid3x3[i][4].second.second;
 
@@ -583,15 +559,12 @@ int main() {
             results.push_back({artifact90, 90, centerCol, centerRow, i}); //90도 //점수는 내림차순
             results.push_back({artifact180,180, centerCol, centerRow, i}); //180도
             results.push_back({artifact270,270, centerCol, centerRow, i}); //270도
-            //cout << artifact90 << " " << centerRow << " " <<centerCol <<" " <<i <<endl;
-            //cout << artifact180 << " " << centerRow << " " <<centerCol <<" " <<i <<endl;
-            //cout << artifact270 << " " << centerRow << " " <<centerCol <<" " <<i <<endl;
-            //cout <<endl;
+
         }
 
-        //우선 순위 별 정렬을 통해 유물 가치 가장 큰 회전 구함
-        //정렬
-        //구조체는 operator를 자동 적용해주지 않기 때문에 에러남. -> sort()에서 비교해줘야 함 
+        //(4) 유물 가치 가장 큰 값 구하기 
+        //우선순위 순으로 정렬
+        //**구조체는 operator를 자동 적용해주지 않기 때문에 에러남. -> sort()에서 비교해줘야 함 
         sort(results.begin(), results.end(), [](const RotationResult& a, const RotationResult& b){
         if(a.score != b.score) return a.score > b.score; //내림차순
         if(a.angle != b.angle) return a.angle < b.angle; //오름차순
@@ -600,19 +573,13 @@ int main() {
         //index는 정렬할 필요 없음
         }); 
 
-
         RotationResult best = results[0]; //가장 유물가치가 큰 값 
-
-        //cout << "score: "<<results[0].score <<endl;
-        //cout << "row: "<<results[0].row <<endl;
-        //cout << "col: "<<results[0].col <<endl;
-        //cout << "index: "<<results[0].index <<endl;
 
         //모든 유물 획득 과정에서 유물을 획득하지 못하였기 때문에 탐사 즉시 종료 
         if(best.score==0)
             break;
     
-        //최대 유물 가치 획득 값 저장 
+        //최대 유물 가치 값 저장 
         maxArtifact += best.score;
 
         //유물 가치 가장 큰 값의 tempGrid를 적용
@@ -624,32 +591,26 @@ int main() {
             turnGrid_270(best.index, best.row, best.col, true);
 
 
-        //사라진 위치에 새로운 조각 생성 
+        //(5) 유적의 벽면에 써있는 숫자로 채우기
         fillZeroSpace();
 
         //2. 유물 연쇄 획득 -  더이상 새로운 조각이 생성X & 조각이 3개 이상 연결되지 않을 때 까지 반복 
-        //bfs로 인접한 조각들 연결해서 최대 유적 가치 구하고
         while(true)
         { 
-            int reScore = repeatGet(); //유물 가치 획득 개수
+            int reScore = repeatGet(); //bfs로 최대 유물 가치 값 구함
 
-            if(reScore==0)
+            if(reScore==0)// 유물 가치 값이 0인 경우, 조각이 3개 이상 연결되지 않는 것이므로 종료
                 break;
 
             fillZeroSpace(); //사라진 부분 채우기 
 
-            maxArtifact+= reScore;
+            maxArtifact+= reScore; //유물 연쇄 획득한 부분까지 유물 가치 총합에 저장
         }
     
+        //유물 가치 총합 출력
         cout << maxArtifact <<" "; 
     }
     cout <<endl;
-
-    
-        
-
-    //1~2까지 = 1턴.
-    //k번 턴 했을 때, 각 턴마다 획득한 유물의 가치의 총합을 출력 
 
     return 0;
         
