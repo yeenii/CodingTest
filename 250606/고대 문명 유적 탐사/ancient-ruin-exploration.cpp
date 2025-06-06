@@ -451,9 +451,6 @@ void fillZeroSpace()
 
     // (2) 정렬 : 열 번호 작은 순 - 행번호 작은 순
     sort(spaceZero.begin(), spaceZero.end()); 
-
-    if (pieceWall_que.size() < spaceZero.size()) 
-        return;
     
     // (3) 유적의 벽면에 써있는 숫자를 순서대로 채워넣음 
     for(int i=0; i<spaceZero.size(); i++)
