@@ -451,13 +451,13 @@ void fillZeroSpace()
 
     // (2) 정렬 : 열 번호 작은 순 - 행번호 작은 순
     sort(spaceZero.begin(), spaceZero.end()); 
+
+    if (pieceWall_que.empty() || pieceWall_que.size() < spaceZero.size()) 
+        return;
     
     // (3) 유적의 벽면에 써있는 숫자를 순서대로 채워넣음 
     for(int i=0; i<spaceZero.size(); i++)
     {
-        if (pieceWall_que.empty()) 
-            return;
-
         int num = pieceWall_que.front();
         historySpace[-spaceZero[i].second][spaceZero[i].first]= num;
         pieceWall_que.pop();
@@ -633,7 +633,7 @@ int main() {
         { 
             int reScore = repeatGet(); //유물 가치 획득 개수
 
-            if(pieceWall_que.empty()|| reScore==0)
+            if(reScore==0)
                 break;
 
             fillZeroSpace(); //사라진 부분 채우기 
