@@ -400,12 +400,23 @@ void fillZeroSpace()
 
 	for (int i = 0; i < zeroSpace.size(); i++)
 	{
-		if (que.size() < zeroSpace.size() || que.empty())
-			break;
+		if (que.empty()) //**que.size() < zeroSpace.size() 하지 말기. 작을 때 마다 리턴 당해서 0 채우는 행동을 한번이 아니라 여러번 하게 됨.
+			return;
 
 		historySpace[-zeroSpace[i].second][zeroSpace[i].first] = que.front();
 		que.pop();
 	}
+
+	/*for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			cout << historySpace[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;*/
+	
 }
 
 int repeatConnectFragile()
@@ -493,6 +504,7 @@ int main(int argc, char** argv)
 
 	//for (test_case = 1; test_case <= T; ++test_case)
 	//{
+		//cout << endl;
 		//cout << "#" << test_case << ":"<<endl;
 
         //5x5 격자 형태 
@@ -500,6 +512,17 @@ int main(int argc, char** argv)
 		
 		cin >> K >> M; //탐사 반복 횟수 K, 유물 조각 개수 M 
 		//cout << K << M<<endl;
+
+		//historySpace 초기화
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				historySpace[i][j] = 0;
+				//cout << historySpace[i][j] << " ";
+			}
+			//cout << endl;
+		}
 
 		//유적지에 조각 정보 저장
 		for (int i = 0; i < 5; i++)
@@ -577,7 +600,7 @@ int main(int argc, char** argv)
 								int val = historySpace[row][col];
 								//cout << val << " ";
 								grid3x3[count].push_back({ val, {row, col } });
-								//cout << val << " ";
+								
 							}
 							//cout << endl;
 						}
