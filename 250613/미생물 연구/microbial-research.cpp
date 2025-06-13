@@ -238,7 +238,7 @@ void moveMicro(int index)
 						if (expGrid[oriRow][oriCol] != idx)
 							continue;
 
-						if (newGrid[i + row][j + row] != 0) //새로운 그리드에 앞으로 놓일 공간이 비어있는지 체크
+						if (newGrid[i + row][j + col] != 0) //새로운 그리드에 앞으로 놓일 공간이 비어있는지 체크
 						{
 							canPlaceCol = false;
 							break;
