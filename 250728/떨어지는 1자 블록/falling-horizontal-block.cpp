@@ -32,14 +32,14 @@ int canGo() //다음 행으로 이동 가능한지
 
 int main(int argc, char** argv)
 {
-	int test_case;
-	int T;
+	//int test_case;
+	//int T;
 
-	freopen("input.txt", "r", stdin);
-	cin >> T;
+	//freopen("input.txt", "r", stdin);
+	//cin >> T;
 	
-	for (test_case = 1; test_case <= T; ++test_case)
-	{
+	//for (test_case = 1; test_case <= T; ++test_case)
+	//{
 		cin >> n >> m >> k;
 
 		//격자판 초기화
@@ -75,6 +75,6 @@ int main(int argc, char** argv)
 			cout << endl;
 		}
 
-	}
+	//}
 	return 0;//정상종료시 반드시 0을 리턴해야합니다.
 }
