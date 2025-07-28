@@ -12,7 +12,7 @@ int space[n_max][n_max];
 
 int canGo() //다음 행으로 이동 가능한지
 {
-	for (int i = 1; i <= n-1; i++)
+	for (int i = 0; i <= n-1; i++)
 	{
 		for (int j = k; j <= k + m - 1; j++)
 		{
@@ -32,15 +32,24 @@ int canGo() //다음 행으로 이동 가능한지
 
 int main(int argc, char** argv)
 {
-	//int test_case;
-	//int T;
+	int test_case;
+	int T;
 
-	//freopen("input.txt", "r", stdin);
-	//cin >> T;
+	freopen("input.txt", "r", stdin);
+	cin >> T;
 	
-	//for (test_case = 1; test_case <= T; ++test_case)
-	//{
+	for (test_case = 1; test_case <= T; ++test_case)
+	{
 		cin >> n >> m >> k;
+
+		//격자판 초기화
+		for (int i = 0; i <= n; i++) //row는 1부터 갈 수 있는지 검사하기 위해, 0 부터 시작
+		{
+			for (int j = 1; j <= n; j++)
+			{
+				space[i][j]=0;
+			}
+		}
 
 		for (int i = 1; i <=n; i++)
 		{
@@ -50,7 +59,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		int new_row = canGo();
+		int new_row = canGo(); //새로운 행 얻음
 
 		for (int col = k; col <= k + m - 1; col++)
 		{
@@ -66,6 +75,6 @@ int main(int argc, char** argv)
 			cout << endl;
 		}
 
-	//}
+	}
 	return 0;//정상종료시 반드시 0을 리턴해야합니다.
 }
