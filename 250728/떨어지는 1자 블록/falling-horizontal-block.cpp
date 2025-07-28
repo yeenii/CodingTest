@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 		int new_row = canGo();
 
-		for (int col = k; col <= k + m + 1; col++)
+		for (int col = k; col <= k + m - 1; col++)
 		{
 			space[new_row][col] = 1;
 		}
