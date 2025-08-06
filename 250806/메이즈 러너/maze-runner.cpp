@@ -119,15 +119,12 @@ void prefix_sum()
 	}
 
 	//참가자 누적합
-	for (int p = 1; p <= m; p++)
+	for (int i = 1; i <= n; i++)
 	{
-		for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= n; j++)
 		{
-			for (int j = 1; j <= n; j++)
-			{
-				partic_sum[i][j] = partic_sum[i - 1][j] + partic_sum[i][j - 1] - partic_sum[i - 1][j - 1]+partic[i][j];
-				
-			}
+			partic_sum[i][j] = partic_sum[i - 1][j] + partic_sum[i][j - 1] - partic_sum[i - 1][j - 1] + partic[i][j];
+
 		}
 	}
 	
