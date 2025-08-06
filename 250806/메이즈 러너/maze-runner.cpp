@@ -65,7 +65,7 @@ void movePart(int t)
 
 			int dist = abs(nextRow - exitRow) + abs(nextCol - exitCol);
 
-			if (minDist >= dist)
+			if (minDist > dist)
 			{
 				moveDir = dir;
 				break; //상하 우선이므로, 먼저나오는 방향 나오면 break.
