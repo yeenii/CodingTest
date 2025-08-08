@@ -92,14 +92,11 @@ void selectAttack(int k) //공격당하는 자
 	vctPos.first = atker[0].row;
 	vctPos.second = atker[0].col;
 	
-	//**공격자와 공격 당하는 자가 같다면 다음 후보로 교체
-	if (atkerPos.first == vctPos.first && atkerPos.second == vctPos.second)
+	if (atkerPos.first == vctPos.first && atkerPos.second == vctPos.second) //공격자와 공격대상자 중복되는 경우, 다음 후보로
 	{
 		vctPos.first = atker[1].row;
 		vctPos.second = atker[1].col;
-
 	}
-
 	//cout << k << ": " << vctPos.first << " " << vctPos.second << endl;
 }
 
@@ -227,6 +224,9 @@ void attack(int k)
 			if (grid[nextRow][nextCol] == 0) //부서진 포탑
 				continue;
 
+			if (nextRow == atkerPos.first && nextCol == atkerPos.second) 
+				continue;
+			
 			//주변 8방향 셀 영향받음
 			grid[nextRow][nextCol] = grid[nextRow][nextCol] - (grid[atkerPos.first][atkerPos.second] / 2);
 
