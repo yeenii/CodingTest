@@ -41,8 +41,11 @@ int dc[8] = {1, 0, -1, 0, -1, 1, -1, 1};
 vector<pair<int, int>> distancePos;
 int applyAttack[n_max][m_max];
 
+int lastAttacker[n_max][m_max]; //가장최근에 공격한 위치
+
 void selectAttacker(int k) //공격자
 {
+	atker.clear(); //구조체 초기화
 
 	for (int i = 0; i < n; i++)
 	{
@@ -50,13 +53,16 @@ void selectAttacker(int k) //공격자
 		{
 			if (grid[i][j] == 0) //**포탄 없음은 건너뛰기
 				continue; 
-			atker.push_back({grid[i][j], k, i+j, j, i}); //공격력 낮음 - 가장 최근에 공격한 포탑 - 행열합 - 열이 가장 큰 포탑
+
+			//공격력 낮음 - **가장 최근에 공격한 포탑 - 행열합 - 열이 가장 큰 포탑
+			//lastAttacker[i][j]: 저장된 이전 순번이 저장됨
+			atker.push_back({grid[i][j], lastAttacker[i][j], i + j, j, i}); 
 		}
 	}
 
 	sort(atker.begin(), atker.end(), [](const attacker& a, const attacker& b) {
 		if (a.hp != b.hp) return a.hp < b.hp; //오름차순
-		if (a.recentAttack != b.recentAttack) return a.recentAttack < b.recentAttack; //오름차순
+		if (a.recentAttack != b.recentAttack) return a.recentAttack > b.recentAttack; //**내림차순
 		if (a.sumRC != b.sumRC) return a.sumRC > b.sumRC; //내림차순
 		if (a.col != b.col) return a.col > b.col; //내림차순
 		});
@@ -76,7 +82,7 @@ void selectAttack(int k) //공격당하는 자
 
 	sort(atker.begin(), atker.end(), [](const attacker& a, const attacker& b) {
 		if (a.hp != b.hp) return a.hp > b.hp; //내림차순
-		if (a.recentAttack != b.recentAttack) return a.recentAttack > b.recentAttack; //내림차순
+		if (a.recentAttack != b.recentAttack) return a.recentAttack < b.recentAttack; //**오름차순
 		if (a.sumRC != b.sumRC) return a.sumRC < b.sumRC; //오름차순
 		if (a.col != b.col) return a.col < b.col; //오름차순
 		});
@@ -85,6 +91,14 @@ void selectAttack(int k) //공격당하는 자
 	//공격당하는자 위치 저장
 	vctPos.first = atker[0].row;
 	vctPos.second = atker[0].col;
+	
+	//**공격자와 공격 당하는 자가 같다면 다음 후보로 교체
+	if (atkerPos.first == vctPos.first && atkerPos.second == vctPos.second)
+	{
+		vctPos.first = atker[1].row;
+		vctPos.second = atker[1].col;
+
+	}
 
 	//cout << k << ": " << vctPos.first << " " << vctPos.second << endl;
 }
@@ -143,7 +157,7 @@ void bfs(int sr, int sc, int val)
 
 
 
-void attack()
+void attack(int k)
 {
 	//gridBfs 초기화
 	for (int i = 0; i < n; i++)
@@ -175,12 +189,18 @@ void attack()
 	{
 		for (int j = 0; j < m; j++)
 		{
-			applyAttack[i][j] = 0; //초기화
+			if (grid[i][j] == 0)
+				applyAttack[i][j] = 0;
+			else
+				applyAttack[i][j] = -1; //초기화
 		}
 	}
 
+
 	//최단 거리 계산
 	bfs(vctPos.first, vctPos.second,-1); //첫 좌표, 값
+
+	
 
 	if (gridBfs[atkerPos.first][atkerPos.second] == -1) //포탄 공격
 	{
@@ -188,6 +208,10 @@ void attack()
 
 		//공격 대상은 공격자의 공격력만큼 피해 받음
 		grid[vctPos.first][vctPos.second] -= grid[atkerPos.first][atkerPos.second];
+
+		if (grid[vctPos.first][vctPos.second] < 0)
+			grid[vctPos.first][vctPos.second] = 0;
+
 		applyAttack[vctPos.first][vctPos.second] = 1;
 
 		int currentRow = vctPos.first;
@@ -205,6 +229,10 @@ void attack()
 
 			//주변 8방향 셀 영향받음
 			grid[nextRow][nextCol] = grid[nextRow][nextCol] - (grid[atkerPos.first][atkerPos.second] / 2);
+
+			if (grid[nextRow][nextCol] < 0)
+				grid[nextRow][nextCol] = 0;
+
 			applyAttack[nextRow][nextCol] = 1;
 		}
 	}
@@ -251,24 +279,38 @@ void attack()
 				//공격자의 공격력 /2 만큼 뺌
 				grid[d.first][d.second] = grid[d.first][d.second] - grid[atkerPos.first][atkerPos.second] / 2;
 
-				if (grid[d.first][d.second] < 0) //0이하가 된 포탑은 0처리
-					grid[d.first][d.second] = 0;
 			}
 			else {
 				//공격 당하는 자 : 공격자의 공격력 만큼 뺌
 				grid[d.first][d.second] -= grid[atkerPos.first][atkerPos.second];
 			}
 
+			if (grid[d.first][d.second] < 0) //0이하가 된 포탑은 0처리
+				grid[d.first][d.second] = 0;
 		}
 		
+
 		distancePos.clear(); //초기화
 	}
 
+	//가장 최근에 공격한 포탑 저장
+	lastAttacker[atkerPos.first][atkerPos.second] = k;
 
+	/*cout << "---" << k << endl;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			cout << grid[i][j] << " ";
+
+		}
+		cout << endl;
+	}*/
 }
 
 void notAttack(int k)
 {
+
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++)
@@ -281,9 +323,6 @@ void notAttack(int k)
 		}
 	}
 
-	atker.clear(); //구조체 초기화
-	atker.push_back({grid[atkerPos.first][atkerPos.second], k, 
-		atkerPos.first + atkerPos.second, atkerPos.second, atkerPos.first}); //가장 최근에 공격한 포탑
 }
 
 int main(int argc, char** argv)
@@ -307,20 +346,18 @@ int main(int argc, char** argv)
 		}
 
 		
-
-		/*for (int i = 0; i < n; i++)
+		//**가장 최근에 공격한 포탑 초기화
+		for (int i = 0; i < n; i++)
 		{
 			for (int j = 0; j < m; j++)
 			{
-				cout << grid[i][j] << " ";
+				lastAttacker[i][j] = 0; // 모든 포탑은 시점 0에서 모두 공격한 경험이 있다고 가정
 			}
-			cout << endl;
-		}*/
-		
-		
+		}
 
 		for (int t = 1; t <= k; t++)
 		{
+
 			//1. 공격자 선정
 			selectAttacker(t);
 
@@ -328,10 +365,24 @@ int main(int argc, char** argv)
 			selectAttack(t);
 
 			//3. 공격 (레이저 공격 -> 포탑 공격)
-			attack();
+			attack(t);
 
 			//4. 포탑 정비
 			notAttack(t); 
+
+			//부서지지 않은 포탑이 1개면, 즉시 중단
+			int cnt = 0;
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					if (grid[i][j] != 0)
+						cnt++;
+				}
+			}
+
+			if (cnt == 1)
+				break;
 			
 		}
 
@@ -347,7 +398,7 @@ int main(int argc, char** argv)
 			}
 		}
 		cout << maxAtk << endl;
-		atker.clear(); //구조체 초기화
+		
 
 	//}
 	return 0;//정상종료시 반드시 0을 리턴해야합니다.
