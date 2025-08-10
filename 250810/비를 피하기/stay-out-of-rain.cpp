@@ -62,7 +62,7 @@ void bfs(int sr, int sc, int val)
 			if (visited[nextRow][nextCol])
 				continue;
 
-			if (grid[nextRow][nextCol] == 1)
+			if (grid[nextRow][nextCol] == 1) //벽
 				continue;
 
 			que.push({nextRow, nextCol});
@@ -153,8 +153,11 @@ int main()
 	{
 		for (int j = 0; j < n; j++)
 		{
-			if (tempGrid[i][j] == INT_MAX)
+			if (grid[i][j]!=2) //사람이아니라면
 				tempGrid[i][j] = 0;
+			else if (!visited[i][j]) //사람이지만, 방문하지 않았다면
+				tempGrid[i][j] = -1;
+
 			cout << tempGrid[i][j] << " ";
 		}
 		cout << endl;
