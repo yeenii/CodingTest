@@ -98,6 +98,9 @@ int main(int argc, char** argv)
 
 	//for (test_case = 1; test_case <= T; ++test_case)
 	//{
+
+		//** 베이스캠프와 편의점, 사람이 더이상 갈 수 있는 곳이 없는 것도 고려해야 함!!
+		
 		//테스트케이스 초기화
 		stPos.clear();
 		bsPos.clear();
@@ -167,8 +170,8 @@ int main(int argc, char** argv)
 				
 				//사람 위치에서 편의점까지 한칸 이동
 				int min_Dist = INT_MAX;
-				int minR = -1;
-				int minC = -1;
+				int minR = INT_MAX;
+				int minC = INT_MAX;
 				for (int i = 0; i < 4; i++)
 				{
 					int nr = HPos[c].first + dr[i];
@@ -192,16 +195,20 @@ int main(int argc, char** argv)
 				HPos[c].second = minC;
 				//cout << c+1 <<": " << HPos[c].first << " " << HPos[c].second << endl;
 
+					
+			}
+
+			//**격자에 있는 모든 사람이 지나간 후에 편의점 지나갈 수 없음
+			for (int c = 0; c < HPos.size(); c++) //격자에 있는 사람 수 만큼
+			{
 				//편의점에 도착한 경우
 				if (HPos[c].first == stPos[c].first && HPos[c].second == stPos[c].second)
 				{
 					isEnd[c] = true;
 					apply[stPos[c].first][stPos[c].second] = true;
-					//cout << c << " 도착" << endl;
+					//cout << c + 1 << " 도착" << endl;
 				}
-					
 			}
-
 			
 			//1. t번 사람 베캠 -> 편의점 첫 이동
 			if (t < m)
