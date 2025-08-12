@@ -76,7 +76,7 @@ void bfs(int t)
 			if (visited[nr][nc])
 				continue;
 
-			if (apply[nr][nc] )//지나갈 수 없는 베캠 / 편의점
+			if (apply[nr][nc])//**지나갈 수 없는 베캠 / 편의점
 				continue;
 
 			que.push({nr, nc});
@@ -98,6 +98,11 @@ int main(int argc, char** argv)
 
 	//for (test_case = 1; test_case <= T; ++test_case)
 	//{
+		//테스트케이스 초기화
+		stPos.clear();
+		bsPos.clear();
+		HPos.clear();
+		arrBS.clear();
 
 		cin >> n >> m;
 
@@ -138,14 +143,11 @@ int main(int argc, char** argv)
 			}
 		}
 
-		//1. 사람 1번 = 편의점 1번
-		//편의점 1번 - 베캠까지의 최단거리 구하기
-		//베캠 row, col 우선순위별 정렬
-		//가장 가까운 베캠에 사람 이동
+		
 		int t = 0;
 		while(true)
 		{
-			//격자 위 사람 이동
+			//2. 격자 위 사람 이동
 			for (int c = 0; c < HPos.size(); c++) //격자에 있는 사람 수 만큼
 			{
 				if (isEnd[c]) //도착한 사람은 건너뛰기
@@ -162,7 +164,7 @@ int main(int argc, char** argv)
 					}
 					cout << endl;
 				}*/
-
+				
 				//사람 위치에서 편의점까지 한칸 이동
 				int min_Dist = INT_MAX;
 				int minR = -1;
@@ -175,7 +177,8 @@ int main(int argc, char** argv)
 					if (!inRange(nr, nc))
 						continue;
 
-					if (apply[nr][nc]) continue;
+					if (apply[nr][nc] || distGrid[nr][nc]==-1) //**더이상 못 지나가는 베캠, 편의점 || 막혀서 못 지나가는 셀
+						continue;
 
 					if (distGrid[nr][nc]< min_Dist) //**주변 셀 4개 중에 가장 작은 셀로 이동
 					{
@@ -200,10 +203,10 @@ int main(int argc, char** argv)
 			}
 
 			
-
+			//1. t번 사람 베캠 -> 편의점 첫 이동
 			if (t < m)
 			{
-				//1. t번째 편의점 - 베캠까지의 최단 거리
+				// t번째 편의점 - 베캠까지의 최단 거리
 				bfs(t);
 
 				/*for (int i = 0; i < n; i++)
@@ -221,29 +224,32 @@ int main(int argc, char** argv)
 					int bsR = bsPos[i].first;
 					int bsC = bsPos[i].second;
 
-					if (apply[bsR][bsC])
+					if (apply[bsR][bsC] || distGrid[bsR][bsC] == -1) //**더이상 못 지나가는 베캠, 편의점 || 막혀서 못 지나가는 셀
 						continue;
 
 					arrBS.push_back({ distGrid[bsR][bsC],bsR,bsC }); //최단 거리 값, 행, 열
 				}
 
-				sort(arrBS.begin(), arrBS.end(), [](const arrBaseCamp& a, const arrBaseCamp& b) {
-					if (a.dist != b.dist) return a.dist < b.dist;
-					if (a.row != b.row) return a.row < b.row;
-					if (a.col != b.col) return a.col < b.col;
-					return false;
-					}); //모두 오름차순
+				if (!arrBS.empty()) //**정렬할 베캠이 없는 경우 고려
+				{
+					sort(arrBS.begin(), arrBS.end(), [](const arrBaseCamp& a, const arrBaseCamp& b) {
+						if (a.dist != b.dist) return a.dist < b.dist;
+						if (a.row != b.row) return a.row < b.row;
+						if (a.col != b.col) return a.col < b.col;
+						return false;
+						}); //모두 오름차순
 
 
-				//3. 가장 가까운 베캠에 사람 이동
-				HPos.push_back({arrBS[0].row ,arrBS[0].col});
+					//3. 가장 가까운 베캠에 사람 이동
+					HPos.push_back({ arrBS[0].row ,arrBS[0].col });
 
-				apply[arrBS[0].row][arrBS[0].col] = true; //해당 베캠 못 지나감
+					apply[arrBS[0].row][arrBS[0].col] = true; //해당 베캠 못 지나감
+
+					arrBS.clear();
+				}
 				
-				arrBS.clear();
 			}
-		
-			
+
 			//편의점에 모든 사람이 도착했는지 체크
 			int cnt = 0;
 			for (int i = 0; i < m; i++)
@@ -257,9 +263,10 @@ int main(int argc, char** argv)
 				cout << t + 1 << endl; //결과 출력 
 				break;
 			}
-
+			
 			t++;
 		}
+		
 	//}
 
 
