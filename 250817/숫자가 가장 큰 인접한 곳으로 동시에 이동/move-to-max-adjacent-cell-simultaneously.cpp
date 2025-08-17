@@ -7,7 +7,7 @@
 using namespace std;
 
 const int n_max = 20;
-const int m_max = 40;
+const int m_max = 400;
 
 int n, m, t;
 int grid[n_max][n_max];
